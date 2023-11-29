@@ -29,9 +29,15 @@ sequelize.models = Object.fromEntries(capsEntries);
 const { User, Product, Comment } = sequelize.models;
 // RELACIÓN DE LAS TABLAS:
 
-Comment.belongsTo(User, {
-    foreignKey: 'user_id', // creará una columna 'user_id' en la tabla Comment con el id del usuario que posteó ese comentario.
+// creará una columna 'user_id' en la tabla Comment con el id del usuario que posteó ese comentario.
+User.hasMany(Comment, {
+    foreignKey: 'user_id',
+    sourceKey: 'id',
     onDelete: 'CASCADE', // si un usuario se elimina, todos los comentarios asociados a ese usuario también se eliminarán.
+});
+Comment.belongsTo(User, {
+    foreignKey: 'user_id',
+    targetKey: 'id',
 });
 // tabla intermedia de los productios favoritos de cada usuario.
 User.belongsToMany(Product, {through: 'user_favorite'});
