@@ -26,7 +26,7 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { User, Product, Comment } = sequelize.models;
+const { User, Product, Comment, Order, Transaction } = sequelize.models;
 // RELACIÓN DE LAS TABLAS:
 
 // creará una columna 'user_id' en la tabla Comment con el id del usuario que postea cada comentario.
@@ -37,6 +37,15 @@ User.hasMany(Comment, {
 });
 Comment.belongsTo(User, {
     foreignKey: 'user_id',
+    targetKey: 'id',
+});
+// creará una columna 'order_id' en la tabla Transaction con el id de una orden.
+Order.hasMany(Transaction, {
+    foreignKey: 'order_id',
+    sourceKey: 'id',
+});
+Transaction.belongsTo(Order, {
+    foreignKey: 'order_id',
     targetKey: 'id',
 });
 // tabla intermedia de los productios favoritos de cada usuario.
