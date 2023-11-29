@@ -29,7 +29,7 @@ sequelize.models = Object.fromEntries(capsEntries);
 const { User, Product, Comment } = sequelize.models;
 // RELACIÓN DE LAS TABLAS:
 
-// creará una columna 'user_id' en la tabla Comment con el id del usuario que posteó ese comentario.
+// creará una columna 'user_id' en la tabla Comment con el id del usuario que postea cada comentario.
 User.hasMany(Comment, {
     foreignKey: 'user_id',
     sourceKey: 'id',
@@ -45,6 +45,12 @@ Product.belongsToMany(User, {through: 'user_favorite'});
 // tabla intermedia de los comentarios que tiene cada producto.
 Comment.belongsToMany(Product, {through: 'comment_product'});
 Product.belongsToMany(Comment, {through: 'comment_product'});
+// tabla intermedia de los órdenes de cada usuario.
+User.belongsToMany(Product, {through: 'Order'});
+Product.belongsToMany(User, {through: 'Order'});
+// tabla intermedia de las compras recibidas por cada usuario.
+User.belongsToMany(Product, {through: 'Purchase'});
+Product.belongsToMany(User, {through: 'Purchase'});
 
 module.exports = {
     sequelize,
