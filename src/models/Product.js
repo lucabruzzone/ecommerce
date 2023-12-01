@@ -22,21 +22,22 @@ module.exports = (sequelize) => {
         discount: {
             type: DataTypes.INTEGER,
             allowNull: true,
-            defaultValue: 0
         },
-        available: {
-            type: DataTypes.BOOLEAN,
-            allowNull: true,
-            defaultValue: true
+        category: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
-        image: {
-            type: DataTypes.STRING(255),
-            allowNull: true,
+        subCategory: {
+            type: DataTypes.STRING,
+            allowNull: true
         },
-        rating: {
+        size: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        stock: {
             type: DataTypes.INTEGER,
-            allowNull: true,
-            defaultValue: 0
+            allowNull: false
         }
     }, { timestamps: true })
 }
