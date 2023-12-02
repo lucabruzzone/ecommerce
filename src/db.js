@@ -23,7 +23,7 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { User, Product, Order, Transaction, Image } = sequelize.models;
+const { User, Product, Order, Transaction, Image, Size } = sequelize.models;
 // RELACIÓN DE LAS TABLAS:
 
 // creará una columna 'order_id' en la tabla Transaction con el id de una orden.
@@ -36,24 +36,14 @@ Transaction.belongsTo(Order, {
     targetKey: 'id',
 });
 
-/* // creará una columna 'product_id' en la tabla Images con el id de un producto.
-Product.hasMany(Image, {
-    foreignKey: 'product_id',
-    sourceKey: 'id',
-    onDelete: 'CASCADE', // si un producto es eliminado, todas las imágenes asociadas a ese producto también se eliminarán.
-});
-Image.belongsTo(Product, {
-    foreignKey: 'product_id',
-    targetKey: 'id',
-}); */
-
 // tabla intermedia de las imágenes de cada producto.
 Product.belongsToMany(Image, { 
     through: 'product_images',
     onDelete: 'CASCADE' 
 });
 Image.belongsToMany(Product, { 
-    through: 'product_images' 
+    through: 'product_images',
+    onDelete: 'CASCADE'
 });
 
 // tabla intermedia de los productios favoritos de cada usuario.
@@ -76,6 +66,10 @@ Product.belongsToMany(User, { through: 'Order' });
 // tabla intermedia de las compras recibidas por cada usuario.
 User.belongsToMany(Product, { through: 'Purchase' });
 Product.belongsToMany(User, { through: 'Purchase' });
+
+// tabla intermedia de las compras recibidas por cada usuario.
+Size.belongsToMany(Product, { through: 'Product_size' });
+Product.belongsToMany(Size, { through: 'Product_size' });
 
 module.exports = {
     sequelize,

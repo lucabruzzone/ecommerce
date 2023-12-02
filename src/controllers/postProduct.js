@@ -1,39 +1,36 @@
-const { Product, Image } = require('../db');
+const { Product, Image, Size } = require('../db');
 
-async function postProduct(req, res) {
+async function postProductByPk(req, res) {
     try {
-        const { title, description, category, subCategory, size, price, discount, stock, images } = req.body;
-        if (title && description && price && size && stock && category && images.length) {
-            const isThisCreated = await Product.findOne({
+        const { title, description, category, subCategory, sizes, price, discount, stock, images } = req.body;
+        if (title && description && price && stock && category && sizes.length && images.length) {
+            const isThisAlreadyCreated = await Product.findOne({
                 where: {
-                    title: title.toLowerCase(),
-                    description: description.toLowerCase(),
-                    category: category.toLowerCase(),
-                    subCategory: subCategory?.toLowerCase(),
-                    size: size.toLowerCase(),
+                    title: title.toUpperCase(),
+                    description: description.toUpperCase(),
+                    category: category.toUpperCase(),
+                    subCategory: subCategory?.toUpperCase(),
                     price,
                     discount,
                     stock
                 }
             });
-            if (!isThisCreated) {
+            if (!isThisAlreadyCreated) {
                 // al crear el producto, recuperamos el producto creado.
                 const currentProduct = await Product.create({
-                    title: title.toLowerCase(),
-                    description: description.toLowerCase(),
-                    category: category.toLowerCase(),
-                    subCategory: subCategory?.toLowerCase(),
-                    size: size.toLowerCase(),
+                    title: title.toUpperCase(),
+                    description: description.toUpperCase(),
+                    category: category.toUpperCase(),
+                    subCategory: subCategory?.toUpperCase(),
                     price,
                     discount,
                     stock
                 })
-                /* const imagePromises = images.map(img => {
-                    return Image.create({
-                        url: img,
-                        product_id: dataValues.id // Asocia la imagen con el producto recién creado
-                    });
-                }); */
+                // Asociamos las tallas necesarias al nuevo producto creado.
+                const getSizesWeNeed = await Size.findAll({where: {name: sizes}});
+                await currentProduct.addSizes(getSizesWeNeed);
+
+                // Luego buscamos la tabla Image, solo las imágenes que mandó el front en el array "images", y vemos si ya existen.
                 const isImagesCreated = await Image.findAll({ where: { url: images } });
                 if (isImagesCreated.length === images.length) {
                     // Si todas las imágenes ya existen, asociarlas al producto.
@@ -57,4 +54,4 @@ async function postProduct(req, res) {
     }
 }
 
-module.exports = postProduct;
+module.exports = postProductByPk;
